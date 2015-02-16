@@ -1,25 +1,77 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Assignment1"
+author: "Jason1823"
+date: "Monday, February 16, 2015"
+output: html_document
 ---
 
+**This assignment is accomplished using the file "activity.csv"**
 
-## Loading and preprocessing the data
+###Here shows the R code for loading and preprocessing the data###
 
+```{r Loading and Preprocessing the data, echo = TRUE }
+data <- read.csv("activity.csv")
+data$date <- as.Date(data$date, "%Y-%m-%d")
+```
 
+###Here is the R code for calculating the total number of steps taken each day###
 
-## What is mean total number of steps taken per day?
+```{r Total Number of Steps Taken Each Day, echo=TRUE}
+datasteps <- data[!is.na(data$steps),]  ##remove the na
+tapply(datasteps$steps,datasteps$date,sum)
+```
 
+###Here is the R code for calculating the mean of steps taken each day###
 
+```{r Mean of Steps Taken Each Day, echo=TRUE}
+tapply(datasteps$steps,datasteps$date,mean)
+```
 
-## What is the average daily activity pattern?
+###Here is the R code for calculating the median of steps taken each day###
 
+```{r Median of Steps Taken Each Day, echo=TRUE}
+tapply(datasteps$steps,datasteps$date,median)
+```
 
+###Here is the code for plotting the average steps taken per 5-minute interval, averaged across all days###
 
-## Imputing missing values
+```{r Average Steps per 5-minute Interval, echo=TRUE}
+avestepsint <- tapply(datasteps$steps,datasteps$interval,mean)
+interval <- names(avestepsint)
+plot(interval,avestepsint, type = "l", ylab = "Number of Steps")
+```
 
+###Here is the code for calculating the interval with most steps###
+```{r Interval that Contains Most Number of Steps, echo = TRUE}
+interval[avestepsint == max(avestepsint)]
+```
 
+###Imputing missing values
 
-## Are there differences in activity patterns between weekdays and weekends?
+```{r, echo =TRUE}
+dataNA <- is.na(data$steps)
+sum(dataNA)   ##report the number of missing values
+
+##Strategy of imputing: replace the missing values with the mean of that 5-minute interval
+data$interval <- as.character(data$interval)
+for(i in seq_along(data$steps)){
+    if(is.na(data$steps[i])) 
+        data$steps[i] <- avestepsint[data$interval[i]]
+}
+
+```
+
+Here is the code for exhibiting the difference of the pattern of steps between weekdays and weekends
+
+```{r, echo=TRUE}
+weekdays <- weekdays(data$date)
+weekends <- weekdays == "ÐÇÆÚÁù" | weekdays =="ÐÇÆÚÈÕ"
+data<- cbind(data,weekends)
+
+for(i in seq_along(data$steps)){
+    if(data$weekends[i])  week[i] <- "weekends"
+    else
+        week[i] <- "weekdays"
+    }
+```
+###Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.###
