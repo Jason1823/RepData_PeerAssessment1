@@ -64,14 +64,24 @@ for(i in seq_along(data$steps)){
 Here is the code for exhibiting the difference of the pattern of steps between weekdays and weekends
 
 ```{r, echo=TRUE}
-weekdays <- weekdays(data$date)
+weekdays <- weekdays(datasteps$date)
 weekends <- weekdays == "ÐÇÆÚÁù" | weekdays =="ÐÇÆÚÈÕ"
-data<- cbind(data,weekends)
-
-for(i in seq_along(data$steps)){
-    if(data$weekends[i])  week[i] <- "weekends"
+datasteps<- cbind(datasteps,weekends)
+week <- character()
+for(i in seq_along(datasteps$steps)){
+    if(datasteps$weekends[i])  week[i] <- "weekends"
     else
         week[i] <- "weekdays"
     }
+datasteps <- cbind(datasteps,week) 
+dataweekends <- subset(datasteps,datasteps$week =="weekends") ##split data by weekend or weekdays
+dataweekdays <- subset(datasteps,datasteps$week =="weekdays")
+weekdayStepsAve <- tapply(dataweekdays$steps,dataweekdays$interval,mean)
+weekendStepsAve <- tapply(dataweekends$steps, dataweekends$interval, mean)
+par(mfrow = c(2,1))
+plot(interval, weekdayStepsAve, ylab ="Number of Steps",type = "l")
+plot(interval, weekendStepsAve, ylab ="Number of Steps",type = "l")
+
 ```
-###Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.###
+
+**Thanks for your investigation**
